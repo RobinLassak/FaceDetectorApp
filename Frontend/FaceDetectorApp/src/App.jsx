@@ -7,6 +7,8 @@ import Search from "./components/Search";
 import PeopleDatabase from "./components/PeopleDatabase";
 import DatabaseOfPeople from "./DatabaseOfPeople.json";
 import Profiles from "./components/Profiles";
+import SearchByVideo from "./components/SearchByVideo";
+import SearchByPhoto from "./components/SearchByPhoto";
 
 function App() {
   const [peopleData, setPeopleData] = useState(DatabaseOfPeople.people);
@@ -54,7 +56,8 @@ function App() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Search />} />
-        <Route path="search" element={<Search />} />
+        <Route path="SearchByPhoto" element={<SearchByPhoto />} />
+        <Route path="SearchByVideo" element={<SearchByVideo />} />
         <Route
           path="profiles"
           element={<Profiles data={peopleData} setPeopleData={setPeopleData} />}
