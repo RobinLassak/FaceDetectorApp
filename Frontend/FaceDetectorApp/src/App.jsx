@@ -33,14 +33,14 @@ function App() {
       console.error("Mazání selhalo:", error);
     }
   };
-  const updatePerson = async (newPerson) => {
+  const updatePerson = async (newPerson, photoFile) => {
     try {
+      const formData = new FormData();
+      formData.append("photo", photoFile);
+      formData.append("person", JSON.stringify(newPerson));
       const response = await fetch("http://localhost:5000/add-person", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newPerson),
+        body: formData,
       });
 
       if (!response.ok) {

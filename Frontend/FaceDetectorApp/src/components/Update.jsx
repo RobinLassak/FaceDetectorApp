@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 function Update({ updatePerson, data }) {
   const navigate = useNavigate();
   const [isValid, setIsValid] = useState(false);
+  const [photoFile, setPhotoFile] = useState(null);
   const [newPerson, setNewPerson] = useState({
     id: data.length > 0 ? Math.max(...data.map((person) => person.id)) + 1 : 1,
     firstName: "",
@@ -11,6 +12,7 @@ function Update({ updatePerson, data }) {
     age: 0,
     adress: "",
     city: "",
+    photo: "",
   });
   const validate = () => {
     if (
@@ -19,7 +21,8 @@ function Update({ updatePerson, data }) {
       newPerson.age < 0 ||
       newPerson.age === "" ||
       newPerson.adress === "" ||
-      newPerson.city === ""
+      newPerson.city === "" ||
+      newPerson.photo === ""
     ) {
       setIsValid(false);
     } else {
@@ -50,6 +53,9 @@ function Update({ updatePerson, data }) {
       case "city":
         updatePerson = { ...newPerson, city: value };
         break;
+      case "photo":
+        updatePerson = { ...newPerson, photo: value };
+        break;
       default:
         break;
     }
@@ -62,8 +68,20 @@ function Update({ updatePerson, data }) {
       age: 0,
       adress: "",
       city: "",
+      photo: "",
     };
     setNewPerson(temp);
+  };
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setPhotoFile(file);
+      setNewPerson((prev) => ({
+        ...prev,
+        photo: url,
+      }));
+    }
   };
   return (
     <div className="container">
@@ -74,10 +92,37 @@ function Update({ updatePerson, data }) {
             Upload Photo:
           </label>
           <div
-            className="flex-grow-1 border border-2 rounded-3 w-100 mb-3"
-            style={{ minHeight: "300px", backgroundColor: "#e9ecef" }}
-          ></div>
-          <input type="file" className="form-control" id="photo" />
+            className={`flex-grow-1 rounded-3 w-100 mb-3 ${
+              newPerson.photo ? "" : "border border-2"
+            }`}
+            style={{
+              minHeight: "300px",
+              backgroundColor: newPerson.photo ? "#ffffff" : "#e9ecef",
+            }}
+          >
+            {newPerson.photo ? (
+              <img
+                src={newPerson.photo}
+                alt="Photo"
+                className="img-fluid"
+                style={{
+                  height: "380px",
+                  width: "100%",
+                  objectFit: "cover",
+                  borderRadius: "8px",
+                }}
+              />
+            ) : (
+              <span className="text-center"></span>
+            )}
+          </div>
+          <input
+            type="file"
+            className="form-control"
+            id="photo"
+            accept="image/*"
+            onChange={handlePhotoUpload}
+          />
         </div>
 
         <div className="col-12 col-md-6">
@@ -151,7 +196,7 @@ function Update({ updatePerson, data }) {
               type="button"
               className="btn btn-danger mx-2"
               onClick={() => {
-                updatePerson(newPerson), resetuj();
+                updatePerson(newPerson, photoFile), resetuj();
               }}
               disabled={!isValid}
             >
