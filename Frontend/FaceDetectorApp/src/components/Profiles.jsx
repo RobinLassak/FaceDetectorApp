@@ -54,20 +54,37 @@ function Profiles({ data, deletePerson }) {
   if (person === null) {
     return <div className="text-center mt-5">Loading data...</div>;
   }
-
   return (
     <div className="container">
       <h1 className="mb-5">Profile</h1>
       <div className="row gx-5 align-items-start">
         <div className="col-12 col-lg-6 col-md-12 col-sm-12 mb-4 mb-lg-4 mb-md-4">
           <div
-            className="border border-2 rounded-3 w-100 h-100"
+            className={`rounded-3 w-100 h-100 d-flex align-items-center justify-content-center overflow-hidden ${
+              person.photo ? "" : "border border-2"
+            }`}
             style={{
-              backgroundColor: "#e9ecef",
+              backgroundColor: person.photo ? "#ffffff" : "#e9ecef",
               minHeight: "540px",
               minWidth: "400px",
             }}
-          ></div>
+          >
+            {person.photo ? (
+              <img
+                src={`http://localhost:5000${person.photo}`}
+                alt="Person"
+                className="img-fluid"
+                style={{
+                  height: "540px",
+                  width: "100%",
+                  objectFit: "cover",
+                  borderRadius: "8px",
+                }}
+              />
+            ) : (
+              <span className="text-muted">No photo available</span>
+            )}
+          </div>
         </div>
 
         <div className="col-12 col-lg-6 col-md-12 col-sm-12">

@@ -5,6 +5,7 @@ function Update({ updatePerson, data }) {
   const navigate = useNavigate();
   const [isValid, setIsValid] = useState(false);
   const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState("");
   const [newPerson, setNewPerson] = useState({
     id: data.length > 0 ? Math.max(...data.map((person) => person.id)) + 1 : 1,
     firstName: "",
@@ -22,7 +23,7 @@ function Update({ updatePerson, data }) {
       newPerson.age === "" ||
       newPerson.adress === "" ||
       newPerson.city === "" ||
-      newPerson.photo === ""
+      !photoFile
     ) {
       setIsValid(false);
     } else {
@@ -76,11 +77,10 @@ function Update({ updatePerson, data }) {
     const file = e.target.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
+
+      setPhotoPreview(url);
+
       setPhotoFile(file);
-      setNewPerson((prev) => ({
-        ...prev,
-        photo: url,
-      }));
     }
   };
   return (
@@ -93,16 +93,16 @@ function Update({ updatePerson, data }) {
           </label>
           <div
             className={`flex-grow-1 rounded-3 w-100 mb-3 ${
-              newPerson.photo ? "" : "border border-2"
+              photoPreview ? "" : "border border-2"
             }`}
             style={{
               minHeight: "300px",
-              backgroundColor: newPerson.photo ? "#ffffff" : "#e9ecef",
+              backgroundColor: photoPreview ? "#ffffff" : "#e9ecef",
             }}
           >
-            {newPerson.photo ? (
+            {photoPreview ? (
               <img
-                src={newPerson.photo}
+                src={photoPreview}
                 alt="Photo"
                 className="img-fluid"
                 style={{
@@ -196,7 +196,7 @@ function Update({ updatePerson, data }) {
               type="button"
               className="btn btn-danger mx-2"
               onClick={() => {
-                updatePerson(newPerson, photoFile), resetuj();
+                updatePerson({ ...newPerson }, photoFile), resetuj();
               }}
               disabled={!isValid}
             >
