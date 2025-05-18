@@ -195,8 +195,11 @@ function Update({ updatePerson, data }) {
             <button
               type="button"
               className="btn btn-danger mx-2"
-              onClick={() => {
-                updatePerson({ ...newPerson }, photoFile), resetuj();
+              onClick={async () => {
+                await updatePerson({ ...newPerson }, photoFile);
+                resetuj();
+                setPhotoPreview("");
+                setPhotoFile(null);
               }}
               disabled={!isValid}
             >

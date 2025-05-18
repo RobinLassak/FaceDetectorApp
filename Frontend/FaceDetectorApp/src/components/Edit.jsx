@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 function Edit({ data, setPeopleData }) {
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState("");
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -18,6 +20,17 @@ function Edit({ data, setPeopleData }) {
       }
     }
   }, [id, data]);
+
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+
+      setPhotoPreview(url);
+
+      setPhotoFile(file);
+    }
+  };
 
   if (!id) {
     return (
@@ -61,14 +74,16 @@ function Edit({ data, setPeopleData }) {
 
   const handleSubmit = async () => {
     try {
+      const formData = new FormData();
+      formData.append("person", JSON.stringify(person));
+      if (photoFile) {
+        formData.append("photo", photoFile);
+      }
       const response = await fetch(
         `http://localhost:5000/edit-person/${person.id}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(person),
+          body: formData,
         }
       );
 
@@ -77,7 +92,7 @@ function Edit({ data, setPeopleData }) {
       }
 
       setPeopleData((prev) =>
-        prev.map((p) => (p.id === person.id ? person : p))
+        prev.map((p) => (p.id === updatedPerson.id ? updatedPerson : p))
       );
 
       navigate("/people-database");
@@ -95,10 +110,37 @@ function Edit({ data, setPeopleData }) {
             Upload Photo:
           </label>
           <div
-            className="flex-grow-1 border border-2 rounded-3 w-100 mb-3"
-            style={{ minHeight: "300px", backgroundColor: "#e9ecef" }}
-          ></div>
-          <input type="file" className="form-control" id="photo" />
+            className={`flex-grow-1 rounded-3 w-100 mb-3 ${
+              person.photo || photoPreview ? "" : "border border-2"
+            }`}
+            style={{
+              minHeight: "300px",
+              backgroundColor: person.photo ? "#ffffff" : "#e9ecef",
+            }}
+          >
+            {person.photo || photoPreview ? (
+              <img
+                src={photoPreview || `http://localhost:5000${person.photo}`}
+                alt="Person"
+                className="img-fluid"
+                style={{
+                  height: "380px",
+                  width: "100%",
+                  objectFit: "cover",
+                  borderRadius: "8px",
+                }}
+              />
+            ) : (
+              <span className="text-muted">No photo available</span>
+            )}
+          </div>
+          <input
+            type="file"
+            className="form-control"
+            id="photo"
+            accept="image/*"
+            onChange={handlePhotoUpload}
+          />
         </div>
 
         <div className="col-12 col-md-6">
